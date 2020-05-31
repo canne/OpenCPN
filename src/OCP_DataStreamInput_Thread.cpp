@@ -22,9 +22,9 @@
  **************************************************************************/
 
 #include "config.h"
+#include "datastream.h"
 #include "OCP_DataStreamInput_Thread.h"
 #include "OCPN_DataStreamEvent.h"
-#include "datastream.h"
 #include "dychart.h"
 
 #ifdef __WXQT__

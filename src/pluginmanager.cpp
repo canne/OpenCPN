@@ -3112,6 +3112,7 @@ void PlugInManager::SendS52ConfigToAllPlugIns( bool bReconfig )
 void PlugInManager::NotifyAuiPlugIns(void)
 {
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array[i];
         if(pic->m_bEnabled && pic->m_bInitState && (pic->m_cap_flag & USES_AUI_MANAGER))

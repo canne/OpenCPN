@@ -55,6 +55,10 @@
 #endif
 
 #include <vector>
+#ifdef __MSVC__
+#include<WS2tcpip.h> //include  this header first
+#include<Windows.h> //then include this one.
+#endif
 #include <wx/socket.h>
 #include <wx/log.h>
 #include <wx/memory.h>

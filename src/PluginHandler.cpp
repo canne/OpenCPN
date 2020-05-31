@@ -34,6 +34,11 @@
 #include <unordered_map>
 #include <set>
 
+#ifdef __MSVC__
+#include<WS2tcpip.h> //include  this header first
+#include<Windows.h> //then include this one.
+#endif
+
 #include <wx/jsonreader.h>
 #include <wx/string.h>
 #include <wx/file.h>

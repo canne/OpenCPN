@@ -53,6 +53,10 @@
 #include <netinet/tcp.h>
 #endif
 
+#ifdef __MSVC__
+#include<WS2tcpip.h> //include  this header first
+#include<Windows.h> //then include this one.
+#endif
 #include "config.h"
 
 #include "dychart.h"
