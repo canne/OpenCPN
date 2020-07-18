@@ -153,6 +153,10 @@ IF(DEFINED _wx_selected_config)
   ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
+if( QT_ANDROID )
+  set(PACKAGE_NAME gorp)
+endif( QT_ANDROID )
+
 include(FindPkgConfig)
 include(CMakeDependentOption)
 
@@ -215,8 +219,10 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   endif ()
 endif ()
 
-if (NOT WIN32 AND NOT APPLE)
+if (NOT WIN32 AND NOT APPLE AND NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
   set(PA_DEFAULT "ON")
+else ()
+  set(PA_DEFAULT "OFF")
 endif ()
 option(
   OCPN_ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available"
@@ -517,7 +523,7 @@ if (QT_ANDROID)
         "-O3"
         "-fPIC"
   )
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libopencpn.so ")
+  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
 endif (QT_ANDROID)
 
 
@@ -1504,7 +1510,11 @@ if (QT_ANDROID)
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
   target_link_libraries(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/libarchive.a)
-else (QT_ANDROID)
+elseif ( APPLE )
+    #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment 
+    target_include_directories(${PACKAGE_NAME} PRIVATE /usr/local/include)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE /usr/local/lib/libarchive.dylib)
+else ()
   find_package(LibArchive REQUIRED)
   target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
@@ -2213,6 +2223,12 @@ if (NOT APPLE)
     )
     install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
+
+  IF(PACKAGE_FORMAT MATCHES "DEB")
+        INSTALL(FILES "buildlinux/98-sglock-ocpn.rules"
+          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ 
+          DESTINATION "/etc/udev/rules.d")
+  ENDIF(PACKAGE_FORMAT MATCHES "DEB")
 
 endif (NOT APPLE)
 # Fix up time_t definition Checks for 32-bit version. And always use 32-bit
