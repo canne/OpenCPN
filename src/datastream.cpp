@@ -240,6 +240,23 @@ void InternalBTDataStream::Open(void)
 #endif
 }
 
+bool InternalBTDataStream::SendSentence( const wxString &sentence )
+{
+#ifdef __OCPN__ANDROID__
+    wxString payload = sentence;
+    if( !sentence.EndsWith(_T("\r\n")) )
+        payload += _T("\r\n");
+    
+    if(IsOk()){
+        androidSendBTMessage( payload );
+        return IsOk();
+    }
+    else
+#endif
+        return false;
+}
+
+
 void InternalGPSDataStream::Open(void)
 {
 #ifdef __OCPN__ANDROID__
@@ -249,6 +266,7 @@ void InternalGPSDataStream::Open(void)
 
 }
 
+ 
 
 DataStream::~DataStream()
 {
@@ -300,6 +318,16 @@ void DataStream::Close()
         androidStopBT();
 #endif
     }
+    
+    wxString port =  m_portstring.AfterFirst(':');      // strip "Serial:"
+    
+#ifdef __OCPN__ANDROID__
+    if(port.Contains(_T("AUSBSerial"))){
+        androidStopUSBSerial(port);
+        SetOk(false);
+    }
+#endif        
+
     
         
 }
